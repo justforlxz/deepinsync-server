@@ -14,8 +14,6 @@ var addr = flag.String("addr", "0.0.0.0:1996", "http service address")
 
 var upgrader = websocket.Upgrader{} // use default options
 
-// var s []Queue
-
 var err error
 
 var m map[string][]*websocket.Conn
@@ -33,6 +31,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 	if ok {
 		c = append(c, conn)
+		m[r.URL.Path] = c
 		fmt.Println("追加指针")
 	} else {
 		var c []*websocket.Conn
@@ -45,6 +44,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 	defer conn.Close()
 	for {
+
 		mt, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
