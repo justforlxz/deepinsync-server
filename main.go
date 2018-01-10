@@ -44,11 +44,10 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 	defer conn.Close()
 	for {
-
 		mt, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
-			break
+			continue
 		}
 		log.Printf("recv: %s", message)
 
@@ -62,7 +61,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			err = s.WriteMessage(mt, message)
 			if err != nil {
 				log.Println("write:", err)
-				break
+				continue
 			}
 		}
 	}
@@ -72,6 +71,6 @@ func main() {
 	m = make(map[string][]*websocket.Conn)
 	flag.Parse()
 	log.SetFlags(0)
-	http.HandleFunc("/", echo)
+	go http.HandleFunc("/", echo)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
